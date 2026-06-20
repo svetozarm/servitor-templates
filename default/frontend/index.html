@@ -21,25 +21,25 @@ li button { background: transparent; color: #c00; font-size: 0.8rem; padding: 0.
 <body>
 <h1>Todos</h1>
 <form id="form">
-  <input type="text" id="input" placeholder="What needs to be done?" required>
+  <input type="text" id="input" placeholder="What needs to be done?" required aria-label="New todo text">
   <button type="submit">Add</button>
 </form>
-<ul id="list"></ul>
+<ul id="list" aria-label="Todo list"></ul>
 <script>
 const list = document.getElementById('list');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 
 async function load() {
-  const res = await fetch('/api/todos');
+  const res = await fetch('api/todos');
   const todos = await res.json();
   list.innerHTML = '';
   todos.forEach(t => {
     const li = document.createElement('li');
     if (t.done) li.className = 'done';
-    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''}>
-      <span>${esc(t.text)}</span><button>✕</button>`;
-    li.querySelector('input').onchange = () => toggle(t.id);
+    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Toggle ${esc(t.text)}">
+      <span>${esc(t.text)}</span><button aria-label="Delete ${esc(t.text)}">✕</button>`;
+    li.querySelector('input').onchange = () => toggle(t);
     li.querySelector('button').onclick = () => remove(t.id);
     list.appendChild(li);
   });
@@ -49,18 +49,18 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 
 form.onsubmit = async (e) => {
   e.preventDefault();
-  await fetch('/api/todos', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: input.value}) });
+  await fetch('api/todos', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: input.value}) });
   input.value = '';
   load();
 };
 
-async function toggle(id) {
-  await fetch('/api/todos/' + id, { method: 'PATCH' });
+async function toggle(t) {
+  await fetch('api/todos/' + t.id, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({text: t.text, done: !t.done}) });
   load();
 }
 
 async function remove(id) {
-  await fetch('/api/todos/' + id, { method: 'DELETE' });
+  await fetch('api/todos/' + id, { method: 'DELETE' });
   load();
 }
 

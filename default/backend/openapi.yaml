@@ -1,0 +1,113 @@
+openapi: "3.1.0"
+info:
+  title: Todo App API
+  version: "1.0.0"
+paths:
+  /api/todos:
+    get:
+      summary: List todos
+      responses:
+        "200":
+          description: Array of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+    post:
+      summary: Create a todo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "201":
+          description: Created todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "422":
+          description: Validation error
+  /api/todos/{id}:
+    get:
+      summary: Get a todo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "404":
+          description: Not found
+    put:
+      summary: Update a todo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "200":
+          description: Updated todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "404":
+          description: Not found
+        "422":
+          description: Validation error
+    delete:
+      summary: Delete a todo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+components:
+  schemas:
+    Todo:
+      type: object
+      required: [id, text, done, created_at]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        done:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+    TodoInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+        done:
+          type: boolean

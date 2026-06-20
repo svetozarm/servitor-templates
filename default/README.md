@@ -18,6 +18,7 @@ A simple todo app demonstrating the servitor pattern.
 
 ```bash
 cd backend && go build -o servitor-backend . && cd ..
+## Alternatively, you can use the build.sh script to build
 servitor
 ```
 
